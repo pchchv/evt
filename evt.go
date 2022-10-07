@@ -168,6 +168,12 @@ func (v *Verifier) DisableAutoUpdateDisposable() *Verifier {
 
 }
 
+// Sets the emails to use in the `MAIL FROM:` smtp command
+func (v *Verifier) FromEmail(email string) *Verifier {
+	v.fromEmail = email
+	return v
+}
+
 func (v *Verifier) calculateReachable(s *SMTP) string {
 	if !v.smtpCheckEnabled {
 		return reachableUnknown
