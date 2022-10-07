@@ -8,6 +8,8 @@ const (
 	defaultHelloName = "localhost"
 	smtpTimeout      = 30 * time.Second
 	smtpPort         = ":25"
+	reachableYes     = "yes"
+	reachableNo      = "no"
 	reachableUnknown = "unknown"
 	alphanumeric     = "abcdefghijklmnopqrstuvwxyz0123456789"
 )
@@ -44,4 +46,17 @@ func NewVerifier() *Verifier {
 		fromEmail: defaultFromEmail,
 		helloName: defaultHelloName,
 	}
+}
+
+func (v *Verifier) calculateReachable(s *SMTP) string {
+	if !v.smtpCheckEnabled {
+		return reachableUnknown
+	}
+	if s.Deliverable {
+		return reachableYes
+	}
+	if s.CatchAll {
+		return reachableUnknown
+	}
+	return reachableNo
 }
