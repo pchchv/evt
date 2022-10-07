@@ -53,6 +53,48 @@ func NewVerifier() *Verifier {
 	}
 }
 
+// Performs address, misc, mx and smtp checks
+func (v *Verifier) Verify(email string) (*Result, error) {
+	ret := Result{
+		Email:     email,
+		Reachable: reachableUnknown,
+	}
+	syntax := v.ParseAddress(email)
+	ret.Syntax = syntax
+	if !syntax.Valid {
+		return &ret, nil
+	}
+	ret.Free = v.IsFreeDomain(syntax.Domain)
+	ret.RoleAccount = v.IsRoleAccount(syntax.Username)
+	ret.Disposable = v.IsDisposable(syntax.Domain)
+	// If the domain name is disposable, mx and smtp are not checked
+	if ret.Disposable {
+		return &ret, nil
+	}
+	mx, err := v.CheckMX(syntax.Domain)
+	if err != nil {
+		return &ret, err
+	}
+	ret.HasMxRecords = mx.HasMXRecord
+	smtp, err := v.CheckSMTP(syntax.Domain, syntax.Username)
+	if err != nil {
+		return &ret, err
+	}
+	ret.SMTP = smtp
+	ret.Reachable = v.calculateReachable(smtp)
+	if v.gravatarCheckEnabled {
+		gravatar, err := v.CheckGravatar(email)
+		if err != nil {
+			return &ret, err
+		}
+		ret.Gravatar = gravatar
+	}
+	if v.domainSuggestEnabled {
+		ret.Suggestion = v.SuggestDomain(syntax.Domain)
+	}
+	return &ret, nil
+}
+
 func (v *Verifier) calculateReachable(s *SMTP) string {
 	if !v.smtpCheckEnabled {
 		return reachableUnknown
