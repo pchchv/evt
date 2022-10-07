@@ -3,6 +3,7 @@ package evt
 import (
 	"crypto/md5"
 	"encoding/hex"
+	"reflect"
 	"strings"
 
 	"golang.org/x/net/idna"
@@ -36,6 +37,23 @@ func domainToASCII(domain string) string {
 		return domain
 	}
 	return asciiDomain
+}
+
+// Convert jobFunc and prams to a specific function and call it
+func callJobFuncWithParams(jobFunc interface{}, params []interface{}) []reflect.Value {
+	typ := reflect.TypeOf(jobFunc)
+	if typ.Kind() != reflect.Func {
+		return nil
+	}
+	f := reflect.ValueOf(jobFunc)
+	if len(params) != f.Type().NumIn() {
+		return nil
+	}
+	in := make([]reflect.Value, len(params))
+	for k, param := range params {
+		in[k] = reflect.ValueOf(param)
+	}
+	return f.Call(in)
 }
 
 // Use md5 to encode string
