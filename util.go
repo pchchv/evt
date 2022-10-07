@@ -1,6 +1,8 @@
 package evt
 
 import (
+	"crypto/md5"
+	"encoding/hex"
 	"strings"
 
 	"golang.org/x/net/idna"
@@ -24,5 +26,14 @@ func domainToASCII(domain string) string {
 		return domain
 	}
 	return asciiDomain
+}
 
+// Use md5 to encode string
+func getMD5Hash(str string) (error, string) {
+	h := md5.New()
+	_, err := h.Write([]byte(str))
+	if err != nil {
+		return err, ""
+	}
+	return nil, hex.EncodeToString(h.Sum(nil))
 }
