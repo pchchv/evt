@@ -18,6 +18,16 @@ func parsedDomain(domain string) string {
 	return lowercaseDomain
 }
 
+// Splits domain and returns sld and tld
+func splitDomain(domain string) (string, string) {
+	parts := strings.Split(domain, ".")
+	n := len(parts)
+	if len(parts) >= 2 {
+		return parts[n-2], parts[n-1]
+	}
+	return "", parts[0]
+}
+
 // Converts any internationalized domain names to ASCII
 // reference: https://en.wikipedia.org/wiki/Punycode
 func domainToASCII(domain string) string {
