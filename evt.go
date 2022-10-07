@@ -19,6 +19,9 @@ const (
 	topLevelThreshold    float32 = 0.6
 )
 
+// Additional list of disposable domains set via users of this library
+var additionalDisposableDomains map[string]bool = map[string]bool{}
+
 // Email verifier
 // Create one by calling NewVerifier
 type Verifier struct {
@@ -100,6 +103,15 @@ func (v *Verifier) Verify(email string) (*Result, error) {
 		ret.Suggestion = v.SuggestDomain(syntax.Domain)
 	}
 	return &ret, nil
+}
+
+// Adds additional domains as disposable domains
+func (v *Verifier) AddDisposableDomains(domains []string) *Verifier {
+	for _, d := range domains {
+		additionalDisposableDomains[d] = true
+		disposableSyncDomains.Store(d, struct{}{})
+	}
+	return v
 }
 
 func (v *Verifier) calculateReachable(s *SMTP) string {
