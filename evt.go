@@ -45,6 +45,13 @@ type Result struct {
 	HasMxRecords bool      `json:"has_mx_records"` // Whether MX-Records for the domain
 }
 
+// Loads disposable domain metadata to disposableSyncDomains which are safe for concurrent use
+func init() {
+	for d := range disposableDomains {
+		disposableSyncDomains.Store(d, struct{}{})
+	}
+}
+
 // Creates a new email verifier
 func NewVerifier() *Verifier {
 	return &Verifier{
