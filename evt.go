@@ -114,6 +114,18 @@ func (v *Verifier) AddDisposableDomains(domains []string) *Verifier {
 	return v
 }
 
+// Enables check gravatar, we don't check gravatar by default
+func (v *Verifier) EnableGravatarCheck() *Verifier {
+	v.gravatarCheckEnabled = true
+	return v
+}
+
+// Disables check gravatar
+func (v *Verifier) DisableGravatarCheck() *Verifier {
+	v.gravatarCheckEnabled = false
+	return v
+}
+
 func (v *Verifier) calculateReachable(s *SMTP) string {
 	if !v.smtpCheckEnabled {
 		return reachableUnknown
