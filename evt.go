@@ -174,6 +174,20 @@ func (v *Verifier) FromEmail(email string) *Verifier {
 	return v
 }
 
+// Sets the name to use in the `EHLO:` SMTP command
+func (v *Verifier) HelloName(domain string) *Verifier {
+	v.helloName = domain
+	return v
+}
+
+// Sets a SOCKS5 proxy to verify the email,
+// proxyURI should be in the format: "socks5://user:password@127.0.0.1:1080?timeout=5s".
+// The protocol could be socks5, socks4 and socks4a.
+func (v *Verifier) Proxy(proxyURI string) *Verifier {
+	v.proxyURI = proxyURI
+	return v
+}
+
 func (v *Verifier) calculateReachable(s *SMTP) string {
 	if !v.smtpCheckEnabled {
 		return reachableUnknown
