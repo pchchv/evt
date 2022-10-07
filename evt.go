@@ -126,6 +126,19 @@ func (v *Verifier) DisableGravatarCheck() *Verifier {
 	return v
 }
 
+// Enables check email by smtp, for most ISPs block outgoing SMTP requests through port 25,
+// to prevent spam, we don't check smtp by default
+func (v *Verifier) EnableSMTPCheck() *Verifier {
+	v.smtpCheckEnabled = true
+	return v
+}
+
+// Disables check email by smtp
+func (v *Verifier) DisableSMTPCheck() *Verifier {
+	v.smtpCheckEnabled = false
+	return v
+}
+
 func (v *Verifier) calculateReachable(s *SMTP) string {
 	if !v.smtpCheckEnabled {
 		return reachableUnknown
