@@ -12,6 +12,7 @@ const (
 	reachableNo                  = "no"
 	reachableUnknown             = "unknown"
 	alphanumeric                 = "abcdefghijklmnopqrstuvwxyz0123456789"
+	disposableDataURL            = "https://raw.githubusercontent.com/disposable/disposable-email-domains/master/domains.json"
 	gravatarBaseUrl              = "https://www.gravatar.com/avatar/"
 	gravatarDefaultMd5           = "d5fe5cbcc31cff5f8ac010db72eb000c"
 	domainThreshold      float32 = 0.82
@@ -151,6 +152,22 @@ func (v *Verifier) DisableDomainSuggest() *Verifier {
 	return v
 }
 
+// Enables update disposable domains automatically
+func (v *Verifier) EnableAutoUpdateDisposable() *Verifier {
+	v.stopCurrentSchedule()
+	// Update disposable domains records daily
+	v.schedule = newSchedule(24*time.Hour, updateDisposableDomains, disposableDataURL)
+	v.schedule.start()
+	return v
+}
+
+// Stops previously started schedule job
+func (v *Verifier) DisableAutoUpdateDisposable() *Verifier {
+	v.stopCurrentSchedule()
+	return v
+
+}
+
 func (v *Verifier) calculateReachable(s *SMTP) string {
 	if !v.smtpCheckEnabled {
 		return reachableUnknown
@@ -162,4 +179,11 @@ func (v *Verifier) calculateReachable(s *SMTP) string {
 		return reachableUnknown
 	}
 	return reachableNo
+}
+
+// Stops current running schedule (if exists)
+func (v *Verifier) stopCurrentSchedule() {
+	if v.schedule != nil {
+		v.schedule.stop()
+	}
 }
