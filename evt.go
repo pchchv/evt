@@ -139,6 +139,18 @@ func (v *Verifier) DisableSMTPCheck() *Verifier {
 	return v
 }
 
+// Will uggest a most similar correct domain when domain misspelled
+func (v *Verifier) EnableDomainSuggest() *Verifier {
+	v.domainSuggestEnabled = true
+	return v
+}
+
+// Will not suggest anything
+func (v *Verifier) DisableDomainSuggest() *Verifier {
+	v.domainSuggestEnabled = false
+	return v
+}
+
 func (v *Verifier) calculateReachable(s *SMTP) string {
 	if !v.smtpCheckEnabled {
 		return reachableUnknown
